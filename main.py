@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import sys
+import os
 
 import config
 
@@ -41,11 +42,25 @@ def exit_command(*args):
     quit()
 
 @command("happy")
-def happy_command(about):
+def happy_command(about, *args):
     print("We're happy about: " + about)
 
-def argument_count(function):
-    return len(inspect.getargspec(command_function)[0])
+@command("view")
+def view_command(*args):
+#print(config.print())
+    config.view()
+
+@command("load")
+def load_command(file_path, *args):
+    config.load(file_path)
+
+@command("cwd")
+def cwd_command(*args):
+    print(os.getcwd())
+
+@command("dbg")
+def debug_command(*args):
+    config.debug()
 
 if __name__ == "__main__":
     main()
