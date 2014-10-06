@@ -22,6 +22,3 @@ def debug():
 def view():
     print(json.dumps(json_data, sort_keys=True, indent=4, separators=(',', ': ')))
 
-def close():
-    close(json_file)
-
