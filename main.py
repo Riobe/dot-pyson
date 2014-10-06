@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import sys
-import inspect
 
 import config
 
@@ -31,18 +30,13 @@ def main():
         argument = " ".join(user_input[1:])
 
         if command in command_actions:
-            command_function = command_actions[command]
-
-            if (argument_count(command_function)):
-                command_function(argument)
-            else:
-                command_function()
+            command_actions[command](argument)
         else:
             print("Unrecognized command")
 
 
 @command("exit")
-def exit_command():
+def exit_command(*args):
     print("Goodbye")
     quit()
 
