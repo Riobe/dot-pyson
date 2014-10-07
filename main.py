@@ -77,7 +77,7 @@ def view_command(property_path, *args):
                 nothing. You can give it a property path to view a smaller part of
                 the document.
                 Usage: print [PROPERTY]"""
-    config.view()
+    print(config.to_string())
 
 @command("open")
 @command("load")
@@ -113,7 +113,8 @@ def keys_command(property_path, *args):
                 given then all the keys at the top level of the document will
                 be displayed.
                 Usage: keys [PROPERTY]"""
-    print("Not implemented")
+    for key in sorted(config.keys_at(property_path)):
+        print(key)
 
 @command("edit")
 @command("set")
