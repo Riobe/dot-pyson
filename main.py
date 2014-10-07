@@ -232,7 +232,7 @@ def view_last_command():
 
 @command("edit-last")
 @command("set-last")
-def edit_last_command(property_path, value=None):
+def set_last_command(property_path, value=None):
     """
   edit-last
   set-last      Set the value at the last property that was printed. If a
