@@ -7,6 +7,7 @@ import readline
 import config
 
 command_actions = {}
+__prompt = ">>>"
 
 def command(name):
     def command_decorator(function):
@@ -15,21 +16,26 @@ def command(name):
     return command_decorator
 
 def main():
-    prompt = ">>>"
-    if len(sys.argv) == 3 and (sys.argv[1] == "-p" or sys.argv[1] == "--prompt"):
-        prompt = sys.argv[2]
+    global __prompt
+
+    handle_arguments()
 
     print("JSON configuration utility version (1.0.0)")
 
     command = ""
     while True:
-        user_input = input(prompt + " ").strip().split(" ")
+        user_input = input(__prompt + " ").strip()
 
         if not user_input:
             continue
 
-        command = user_input[0]
-        argument = " ".join(user_input[1:])
+        run_command(user_input)
+
+
+def run_command(command_line):
+        command_line = command_line.split(" ")
+        command = command_line[0]
+        argument = " ".join(command_line[1:])
 
         if command in command_actions:
             try:
@@ -40,6 +46,24 @@ def main():
         else:
             print("Unrecognized command")
 
+def handle_arguments():
+    global __prompt
+
+    # No arguments.
+    if len(sys.argv) < 2:
+        return
+
+    index = 1
+    # Go while there are two values left
+    while index < len(sys.argv)-1:
+        flag = sys.argv[index]
+        argument = sys.argv[index+1]
+        index += 2
+
+        if flag == "-p" or flag == "--prompt":
+            __prompt = argument
+        if flag == "-c" or flag == "--command":
+            run_command(argument)
 
 @command("quit")
 @command("exit")
