@@ -41,7 +41,11 @@ def main():
 
     command = ""
     while True:
-        user_input = input(__prompt + " ").strip()
+        try:
+            user_input = input(__prompt + " ").strip()
+        except KeyboardInterrupt:
+            print()
+            exit_command()
 
         if not user_input:
             continue
