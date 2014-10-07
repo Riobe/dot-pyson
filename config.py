@@ -21,3 +21,12 @@ def keys_at(path):
     data = __json_data[path] if path else __json_data
     return data.keys()
 
+def save(file_path):
+    global __json_path
+    global __json_data
+
+    if file_path:
+        __json_path = file_path
+    with open(__json_path, 'w') as json_file:
+        json_file.write(to_string())
+

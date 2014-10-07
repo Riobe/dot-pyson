@@ -93,10 +93,12 @@ def sorted_documentation():
     return [sorted_function.__doc__ for sorted_function in sorted({command_function for command_function in command_actions.values()}, key=lambda f: f.__name__)]
 
 @command("print")
+@command("cat")
 @command("view")
 def view_command(property_path, *args):
     """
   print
+  cat
   view          Displays the loaded JSON document, if there is one. Otherwise does 
                 nothing. You can give it a property path to view a smaller part of
                 the document.
@@ -194,12 +196,12 @@ def delete_last_command(*args):
 
 @command("write")
 @command("save")
-def save_command(*args):
+def save_command(file_path, *args):
     """
   write
   save          Writes the changes to the document back to disk.
                 Usage: save"""
-    print("Not implemented")
+    config.save(file_path)
 
 if __name__ == "__main__":
     main()
