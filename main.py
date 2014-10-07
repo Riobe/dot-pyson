@@ -6,12 +6,12 @@ import readline
 
 import config
 
-command_actions = {}
+__command_actions = {}
 __prompt = ">>>"
 
 def command(name):
     def command_decorator(function):
-        command_actions[name] = function
+        __command_actions[name] = function
         return function
     return command_decorator
 
@@ -37,9 +37,9 @@ def run_command(command_line):
         command = command_line[0]
         argument = " ".join(command_line[1:])
 
-        if command in command_actions:
+        if command in __command_actions:
             try:
-                command_actions[command](argument)
+                __command_actions[command](argument)
             except TypeError:
                 print("Insufficient arguments supplied.")
                 help_command(command)
@@ -84,13 +84,13 @@ def help_command(command, *args):
             print(command_doc)
         return
 
-    if command in command_actions:
-        print(command_actions[command].__doc__)
+    if command in __command_actions:
+        print(__command_actions[command].__doc__)
     else:
         print("Unrecognized command. Please type 'help' to see the help for all commands.")
 
 def sorted_documentation():
-    return [sorted_function.__doc__ for sorted_function in sorted({command_function for command_function in command_actions.values()}, key=lambda f: f.__name__)]
+    return [sorted_function.__doc__ for sorted_function in sorted({command_function for command_function in __command_actions.values()}, key=lambda f: f.__name__)]
 
 @command("print")
 @command("cat")
