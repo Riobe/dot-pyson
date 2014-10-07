@@ -3,10 +3,12 @@
 import sys
 import os
 import readline
+import glob
 
 import config
 
 __command_actions = {}
+__file_actions = []
 __prompt = ">>>"
 __sort = True
 
@@ -16,11 +18,26 @@ def command(name):
         return function
     return command_decorator
 
+def file_command(name):
+    def command_decorator(function):
+        __command_actions[name] = function
+        __file_actions.append(name)
+        return function
+    return command_decorator
+
+def has_file_arg(function):
+    function.__has_file_arg__ = True
+    return function
+
 def main():
     global __prompt
 
     print("JSON configuration utility version (1.0.0)")
     handle_arguments()
+
+    readline.set_completer_delims("\t\n")
+    readline.parse_and_bind("tab: complete")
+    readline.set_completer(auto_complete)
 
     command = ""
     while True:
@@ -31,6 +48,15 @@ def main():
 
         run_command(user_input)
 
+def auto_complete(text, state):
+    global __file_actions
+
+    for command in __file_actions:
+        command += " "
+        if text.startswith(command):
+            return ([command + path for path in glob.glob(text.replace(command, "")+"*")]+[None])[state]
+
+    return ([command for command in __command_actions.keys() if command.startswith(text)] + [None])[state]
 
 def run_command(command_line):
         command_line = command_line.split(" ")
@@ -63,6 +89,13 @@ def handle_arguments():
         index += 1
 
         # Check flags that require no arguments
+        if flag[0] != "-":
+            try:
+                run_command("load " + flag)
+            except:
+                print("Error loading file, exiting.")
+                exit_command()
+            continue
         if flag == "--unsorted":
             __sort = False
             continue
@@ -120,8 +153,8 @@ def view_command(property_path=None):
 
     print(config.to_string(property_path))
 
-@command("open")
-@command("load")
+@file_command("open")
+@file_command("load")
 def load_command(file_path):
     """
   open
@@ -140,7 +173,7 @@ def cwd_command():
                 Usage: pwd"""
     print(os.getcwd())
 
-@command("cd")
+@file_command("cd")
 def cd_command(path):
     """
   cd            Changes the present working directory.
