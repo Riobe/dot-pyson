@@ -8,6 +8,7 @@ import config
 
 __command_actions = {}
 __prompt = ">>>"
+__sort = True
 
 def command(name):
     def command_decorator(function):
@@ -18,9 +19,8 @@ def command(name):
 def main():
     global __prompt
 
-    handle_arguments()
-
     print("JSON configuration utility version (1.0.0)")
+    handle_arguments()
 
     command = ""
     while True:
@@ -35,12 +35,14 @@ def main():
 def run_command(command_line):
         command_line = command_line.split(" ")
         command = command_line[0]
-        argument = " ".join(command_line[1:])
+        argument = command_line[1:]
 
         if command in __command_actions:
             try:
-                __command_actions[command](argument)
-            except TypeError:
+                __command_actions[command](*argument)
+            except TypeError as error:
+                message = error.args[0]
+                print(message)
                 print("Insufficient arguments supplied.")
                 help_command(command)
         else:
@@ -48,6 +50,7 @@ def run_command(command_line):
 
 def handle_arguments():
     global __prompt
+    global __sort
 
     # No arguments.
     if len(sys.argv) < 2:
@@ -55,19 +58,29 @@ def handle_arguments():
 
     index = 1
     # Go while there are two values left
-    while index < len(sys.argv)-1:
+    while index < len(sys.argv):
         flag = sys.argv[index]
-        argument = sys.argv[index+1]
-        index += 2
+        index += 1
+
+        # Check flags that require no arguments
+        if flag == "--unsorted":
+            __sort = False
+            continue
+            
+        if index == len(sys.argv):
+            break
+
+        argument = sys.argv[index]
+        index += 1
 
         if flag == "-p" or flag == "--prompt":
             __prompt = argument
-        if flag == "-c" or flag == "--command":
+        elif flag == "-c" or flag == "--command":
             run_command(argument)
 
 @command("quit")
 @command("exit")
-def exit_command(*args):
+def exit_command():
     """
   exit
   quit          Exits the program."""
@@ -75,7 +88,7 @@ def exit_command(*args):
     quit()
 
 @command("help")
-def help_command(command, *args):
+def help_command(command=None):
     """
   help          Displays help for a command if it is given or for all commands otherwise.
                 Usage: help [COMMAND]"""
@@ -95,7 +108,7 @@ def sorted_documentation():
 @command("print")
 @command("cat")
 @command("view")
-def view_command(property_path, *args):
+def view_command(property_path=None):
     """
   print
   cat
@@ -103,21 +116,23 @@ def view_command(property_path, *args):
                 nothing. You can give it a property path to view a smaller part of
                 the document.
                 Usage: print [PROPERTY]"""
-    print(config.to_string())
+    global __sort
+
+    print(config.to_string(property_path))
 
 @command("open")
 @command("load")
-def load_command(file_path, *args):
+def load_command(file_path):
     """
   open
   load          Opens a new file and loads it's contents into memory, where it can
                 be worked with.
                 Usage: load FILE"""
-    config.load(file_path)
+    config.load(file_path, __sort)
 
 @command("pwd")
 @command("cwd")
-def cwd_command(*args):
+def cwd_command():
     """
   pwd
   cwd           Shows the present working directory. Paths to files are relative
@@ -126,14 +141,14 @@ def cwd_command(*args):
     print(os.getcwd())
 
 @command("cd")
-def cd_command(path, *args):
+def cd_command(path):
     """
   cd            Changes the present working directory.
                 Usage: cd PATH"""
     os.chdir(path)
 
 @command("keys")
-def keys_command(property_path, *args):
+def keys_command(property_path):
     """
   keys          Displays all the keys at a given path. If no property path is
                 given then all the keys at the top level of the document will
@@ -144,7 +159,7 @@ def keys_command(property_path, *args):
 
 @command("edit")
 @command("set")
-def edit_command(property_path, value, *args):
+def edit_command(property_path, value):
     """
   set
   edit          Requires a key path and a value. Will set the value at the
@@ -155,7 +170,7 @@ def edit_command(property_path, value, *args):
 
 @command("del")
 @command("rm")
-def delete_command(property_path, *args):
+def delete_command(property_path):
     """
   del
   rm            Remove a property from the JSON path. Use "write" to save the
@@ -166,7 +181,7 @@ def delete_command(property_path, *args):
 @command("last")
 @command("view-last")
 @command("print-last")
-def view_last_command(*args):
+def view_last_command():
     """
   last
   view-last 
@@ -176,7 +191,7 @@ def view_last_command(*args):
 
 @command("edit-last")
 @command("set-last")
-def edit_last_command(value, *args):
+def edit_last_command(value):
     """
   edit-last
   set-last      Set the value at the last property that was printed. If a
@@ -187,7 +202,7 @@ def edit_last_command(value, *args):
 
 @command("del-last")
 @command("rm-last")
-def delete_last_command(*args):
+def delete_last_command():
     """
   del-last
   rm-last       Delete the last property that was printed.
@@ -196,7 +211,7 @@ def delete_last_command(*args):
 
 @command("write")
 @command("save")
-def save_command(file_path, *args):
+def save_command(file_path):
     """
   write
   save          Writes the changes to the document back to disk.
