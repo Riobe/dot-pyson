@@ -35,3 +35,7 @@ def save(file_path):
     with open(__json_path, 'w') as json_file:
         json_file.write(to_string())
 
+def set_property(path, value):
+    global __json_data
+
+    __json_data[path] = value

@@ -4,6 +4,7 @@ import sys
 import os
 import readline
 import glob
+import shlex
 
 import config
 
@@ -65,15 +66,13 @@ def auto_complete(text, state):
 def run_command(command_line):
         command_line = command_line.split(" ")
         command = command_line[0]
-        argument = command_line[1:]
+        arguments = shlex.split(" ".join(command_line[1:]))
 
         if command in __command_actions:
             try:
-                __command_actions[command](*argument)
+                __command_actions[command](*arguments)
             except TypeError as error:
-                message = error.args[0]
-                print(message)
-                print("Insufficient arguments supplied.")
+                print("An incorrect number of arguments were supplied.")
                 help_command(command)
         else:
             print("Unrecognized command")
@@ -203,7 +202,7 @@ def set_command(property_path, value):
                 key path to the supplied value. This operation will create the
                 property path if it doesn't already exist.
                 Usage: set PROPERTY VALUE"""
-    print("Not implemented")
+    config.set_property(property_path, value)
 
 @command("del")
 @command("rm")
