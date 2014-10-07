@@ -12,6 +12,7 @@ __command_actions = {}
 __file_actions = []
 __prompt = ">>>"
 __sort = True
+__last_viewed = ""
 
 def command(name):
     def command_decorator(function):
@@ -153,7 +154,9 @@ def view_command(property_path=None):
                 the document.
                 Usage: print [PROPERTY]"""
     global __sort
+    global __last_viewed
 
+    __last_viewed = property_path
     print(config.to_string(property_path))
 
 @file_command("open")
@@ -223,7 +226,9 @@ def view_last_command():
   view-last 
   print-last    View the last property printed.
                 Usage: last"""
-    print("Not implemented")
+    global __last_viewed
+
+    print(__last_viewed + ": " + config.to_string(__last_viewed))
 
 @command("edit-last")
 @command("set-last")
