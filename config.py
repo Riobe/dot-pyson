@@ -23,8 +23,9 @@ def load(file_path, load_sorted):
             __json_data = json.load(json_file, object_pairs_hook = OrderedDict)
             
 def to_string(path=None):
-    data = __json_data[path] if path else __json_data
-    return json.dumps(data, sort_keys=__sorted, indent=4, separators=(',', ': '))
+    data = json_at(path)
+
+    return json.dumps(data, sort_keys=__sorted, indent=4, separators=(",", ": "))
 
 def keys_at(path):
     data = __json_data[path] if path else __json_data
@@ -36,7 +37,7 @@ def save(file_path):
 
     if file_path:
         __json_path = file_path
-    with open(__json_path, 'w') as json_file:
+    with open(__json_path, "w") as json_file:
         json_file.write(to_string())
 
 def set_property(path, value):
@@ -48,3 +49,11 @@ def remove_property(path):
     global __json_data
 
     del __json_data[path]
+
+def json_at(path=None):
+    data = __json_data
+    if path:
+        for prop in path.split("."):
+            data = data[prop]
+
+    return data
