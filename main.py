@@ -212,7 +212,7 @@ def delete_command(property_path):
   rm            Remove a property from the JSON path. Use "write" to save the
                 change.
                 Usage: rm PROPERTY"""
-    print("Not implemented")
+    config.remove_property(property_path)
 
 @command("last")
 @command("view-last")

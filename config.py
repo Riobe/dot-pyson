@@ -39,3 +39,8 @@ def set_property(path, value):
     global __json_data
 
     __json_data[path] = value
+
+def remove_property(path):
+    global __json_data
+
+    del __json_data[path]
