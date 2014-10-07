@@ -192,10 +192,10 @@ def keys_command(property_path):
 
 @command("edit")
 @command("set")
-def edit_command(property_path, value):
+def set_command(property_path, value):
     """
-  set
-  edit          Requires a key path and a value. Will set the value at the
+  edit
+  set           Requires a key path and a value. Will set the value at the
                 key path to the supplied value. This operation will create the
                 property path if it doesn't already exist.
                 Usage: set PROPERTY VALUE"""
