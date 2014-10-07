@@ -32,7 +32,11 @@ def main():
         argument = " ".join(user_input[1:])
 
         if command in command_actions:
-            command_actions[command](argument)
+            try:
+                command_actions[command](argument)
+            except TypeError:
+                print("Insufficient arguments supplied.")
+                help_command(command)
         else:
             print("Unrecognized command")
 
@@ -42,6 +46,18 @@ def main():
 def exit_command(*args):
     print("Goodbye")
     quit()
+
+@command("help")
+def help_command(command, *args):
+    if not command:
+        for command_function in {function for function in command_actions.values()}:
+            print(command_function.__doc__)
+        return
+
+    if command in command_actions:
+        print(command_actions[command].__doc__)
+    else:
+        print("Unrecognized command. Please type 'help' to see the help for all commands.")
 
 @command("print")
 @command("view")
@@ -65,16 +81,15 @@ def keys_command(key_path, *args):
 @command("edit")
 @command("set")
 def edit_command(key_path, value, *args):
+    """
+  set
+  edit       Requires a key path and a value. Will set the value at the
+                    key path to the supplied value."""
     print("Not implemented")
 
 @command("del")
 @command("rm")
 def delete_command(key_path, *args):
-    print("Not implemented")
-
-@command("add")
-@command("insert")
-def insert(key_path, value, *args):
     print("Not implemented")
 
 @command("last")
