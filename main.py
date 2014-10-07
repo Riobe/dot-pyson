@@ -2,6 +2,7 @@
 
 import sys
 import os
+import readline
 
 import config
 
@@ -36,31 +37,65 @@ def main():
             print("Unrecognized command")
 
 
+@command("quit")
 @command("exit")
 def exit_command(*args):
     print("Goodbye")
     quit()
 
-@command("happy")
-def happy_command(about, *args):
-    print("We're happy about: " + about)
-
+@command("print")
 @command("view")
-def view_command(*args):
-#print(config.print())
+def view_command(key_path, *args):
     config.view()
 
+@command("open")
 @command("load")
 def load_command(file_path, *args):
     config.load(file_path)
 
+@command("pwd")
 @command("cwd")
 def cwd_command(*args):
     print(os.getcwd())
 
-@command("dbg")
-def debug_command(*args):
-    config.debug()
+@command("keys")
+def keys_command(key_path, *args):
+    print("Not implemented")
+
+@command("edit")
+@command("set")
+def edit_command(key_path, value, *args):
+    print("Not implemented")
+
+@command("del")
+@command("rm")
+def delete_command(key_path, *args):
+    print("Not implemented")
+
+@command("add")
+@command("insert")
+def insert(key_path, value, *args):
+    print("Not implemented")
+
+@command("last")
+@command("view-last")
+def view_last_command(*args):
+    print("Not implemented")
+
+@command("edit-last")
+@command("set-last")
+def edit_last_command(value, *args):
+    print("Not implemented")
+
+@command("del-last")
+@command("rm-last")
+def delete_last_command(*args):
+    print("Not implemented")
+
+@command("write")
+@command("save")
+def save_command(*args):
+    print("Not implemented")
 
 if __name__ == "__main__":
     main()
