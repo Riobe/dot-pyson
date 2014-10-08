@@ -10,6 +10,7 @@ import config
 
 __command_actions = {}
 __file_actions = []
+__key_actions = []
 __prompt = ">>>"
 __sort = True
 __last_viewed = ""
@@ -27,9 +28,12 @@ def file_command(name):
         return function
     return command_decorator
 
-def has_file_arg(function):
-    function.__has_file_arg__ = True
-    return function
+def key_command(name):
+    def command_decorator(function):
+        __command_actions[name] = function
+        __key_actions.append(name)
+        return function
+    return command_decorator
 
 def main():
     global __prompt
@@ -62,7 +66,16 @@ def auto_complete(text, state):
         if text.startswith(command):
             return ([command + path for path in glob.glob(text.replace(command, "")+"*")]+[None])[state]
 
-    return ([command for command in __command_actions.keys() if command.startswith(text)] + [None])[state]
+    for command in __key_actions:
+        command += " "
+        if text.startswith(command):
+            key_info = text.partition(" ")[2].rpartition(".")
+            return [command + key_info[0] + key_info[1] + key
+                        for key 
+                        in config.keys_at(key_info[0]) 
+                        if key.startswith(key_info[2])]+[None])[state]
+
+    return ([command for command in __command_actions.keys() if command.startswith(text)]+[None])[state]
 
 def run_command(command_line):
         command_line = command_line.split(" ")
@@ -142,9 +155,9 @@ def help_command(command=None):
 def sorted_documentation():
     return [sorted_function.__doc__ for sorted_function in sorted({command_function for command_function in __command_actions.values()}, key=lambda f: f.__name__)]
 
-@command("print")
-@command("cat")
-@command("view")
+@key_command("print")
+@key_command("cat")
+@key_command("view")
 def view_command(property_path=None):
     """
   print
@@ -186,8 +199,8 @@ def cd_command(path):
                 Usage: cd PATH"""
     os.chdir(path)
 
-@command("keys")
-def keys_command(property_path):
+@key_command("keys")
+def keys_command(property_path=None):
     """
   keys          Displays all the keys at a given path. If no property path is
                 given then all the keys at the top level of the document will
@@ -196,8 +209,8 @@ def keys_command(property_path):
     for key in sorted(config.keys_at(property_path)):
         print(key)
 
-@command("edit")
-@command("set")
+@key_command("edit")
+@key_command("set")
 def set_command(property_path, value):
     """
   edit
@@ -207,8 +220,8 @@ def set_command(property_path, value):
                 Usage: set PROPERTY VALUE"""
     config.set_property(property_path, value)
 
-@command("del")
-@command("rm")
+@key_command("del")
+@key_command("rm")
 def delete_command(property_path):
     """
   del
@@ -259,8 +272,8 @@ def delete_last_command():
                 Usage: rm-last"""
     print("Not implemented")
 
-@command("write")
-@command("save")
+@file_command("write")
+@file_command("save")
 def save_command(file_path):
     """
   write

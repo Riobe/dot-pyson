@@ -27,8 +27,8 @@ def to_string(path=None):
 
     return json.dumps(data, sort_keys=__sorted, indent=4, separators=(",", ": "))
 
-def keys_at(path):
-    data = __json_data[path] if path else __json_data
+def keys_at(path=None):
+    data = json_at(path)
     return data.keys()
 
 def save(file_path):
@@ -41,14 +41,12 @@ def save(file_path):
         json_file.write(to_string())
 
 def set_property(path, value):
-    global __json_data
-
-    __json_data[path] = value
+    data = json_at(path)
+    data[path] = value
 
 def remove_property(path):
-    global __json_data
-
-    del __json_data[path]
+    data = json_at(path)
+    del data[path]
 
 def json_at(path=None):
     data = __json_data
