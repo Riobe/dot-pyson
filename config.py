@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import json
+import functools
 from collections import OrderedDict
 
 __json_path = None
@@ -9,6 +10,7 @@ __sorted = None
 
 debug = False
 def trace(function):
+    @functools.wraps(function)
     def wrapper(*args, **kwargs):
         if debug:
             print("{function_name}({arguments}{comma}{keywords})".format(
