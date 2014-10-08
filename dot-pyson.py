@@ -242,6 +242,9 @@ def set_command(property_path, value):
   set           Requires a key path and a value. Will set the value at the
                 key path to the supplied value. This operation will create the
                 property path if it doesn't already exist.
+
+                To set a value to be an object, you must surround the keys
+                with quotes. Embed quotes in your value with \".
                 Usage: set PROPERTY VALUE"""
     config.set_property(property_path, value)
 
