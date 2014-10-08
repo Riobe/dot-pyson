@@ -59,8 +59,6 @@ def main():
         run_command(user_input)
 
 def auto_complete(text, state):
-    global __file_actions
-
     for command in __file_actions:
         command += " "
         if text.startswith(command):
