@@ -6,6 +6,7 @@ import readline
 import glob
 import shlex
 
+from config import trace
 import config
 
 __command_actions = {}
@@ -35,6 +36,7 @@ def key_command(name):
         __key_actions.append(name)
         return function
     return command_decorator
+
 
 def main():
     global __prompt
@@ -66,6 +68,7 @@ def main():
         run_command(user_input)
         __time_to_go = False
 
+@trace
 def auto_complete(text, state):
     for command in __file_actions:
         command += " "
@@ -83,6 +86,7 @@ def auto_complete(text, state):
 
     return ([command for command in __command_actions.keys() if command.startswith(text)]+[None])[state]
 
+@trace
 def run_command(command_line):
         command_line = command_line.split(" ")
         command = command_line[0]
@@ -97,6 +101,7 @@ def run_command(command_line):
         else:
             print("Unrecognized command")
 
+@trace
 def handle_arguments():
     global __prompt
     global __sort
@@ -122,6 +127,9 @@ def handle_arguments():
         if flag == "--unsorted":
             __sort = False
             continue
+        if flag == "--debug":
+            config.debug = True
+            continue
             
         if index == len(sys.argv):
             break
@@ -136,6 +144,7 @@ def handle_arguments():
 
 @command("quit")
 @command("exit")
+@trace
 def exit_command():
     """
   exit
@@ -144,6 +153,7 @@ def exit_command():
     quit()
 
 @command("help")
+@trace
 def help_command(command=None):
     """
   help          Displays help for a command if it is given or for all commands otherwise.
@@ -158,12 +168,14 @@ def help_command(command=None):
     else:
         print("Unrecognized command. Please type 'help' to see the help for all commands.")
 
+@trace
 def sorted_documentation():
     return [sorted_function.__doc__ for sorted_function in sorted({command_function for command_function in __command_actions.values()}, key=lambda f: f.__name__)]
 
 @key_command("print")
 @key_command("cat")
 @key_command("view")
+@trace
 def view_command(property_path=None):
     """
   print
@@ -179,6 +191,7 @@ def view_command(property_path=None):
 
 @file_command("open")
 @file_command("load")
+@trace
 def load_command(file_path):
     """
   open
@@ -189,6 +202,7 @@ def load_command(file_path):
 
 @command("pwd")
 @command("cwd")
+@trace
 def cwd_command():
     """
   pwd
@@ -198,6 +212,7 @@ def cwd_command():
     print(os.getcwd())
 
 @file_command("cd")
+@trace
 def cd_command(path):
     """
   cd            Changes the present working directory.
@@ -206,17 +221,21 @@ def cd_command(path):
 
 @key_command("keys")
 @key_command("ls")
+@trace
 def keys_command(property_path=None):
     """
+  ls
   keys          Displays all the keys at a given path. If no property path is
                 given then all the keys at the top level of the document will
                 be displayed.
                 Usage: keys [PROPERTY]"""
-    for key in sorted(config.keys_at(property_path)):
-        print(key)
+    keys = config.keys_at(property_path)
+    for key in sorted(keys):
+        print("{0:.<70}{1:.>10}".format(key, keys[key]))
 
 @key_command("edit")
 @key_command("set")
+@trace
 def set_command(property_path, value):
     """
   edit
@@ -228,6 +247,7 @@ def set_command(property_path, value):
 
 @key_command("del")
 @key_command("rm")
+@trace
 def delete_command(property_path):
     """
   del
@@ -239,6 +259,7 @@ def delete_command(property_path):
 @command("last")
 @command("view-last")
 @command("print-last")
+@trace
 def view_last_command():
     """
   last
@@ -251,6 +272,7 @@ def view_last_command():
 
 @command("edit-last")
 @command("set-last")
+@trace
 def set_last_command(property_path, value=None):
     """
   edit-last
@@ -271,6 +293,7 @@ def set_last_command(property_path, value=None):
 
 @command("del-last")
 @command("rm-last")
+@trace
 def delete_last_command():
     """
   del-last
@@ -287,6 +310,7 @@ def delete_last_command():
 
 @file_command("write")
 @file_command("save")
+@trace
 def save_command(file_path):
     """
   write
