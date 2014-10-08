@@ -70,7 +70,7 @@ def auto_complete(text, state):
         command += " "
         if text.startswith(command):
             key_info = text.partition(" ")[2].rpartition(".")
-            return [command + key_info[0] + key_info[1] + key
+            return ([command + key_info[0] + key_info[1] + key
                         for key 
                         in config.keys_at(key_info[0]) 
                         if key.startswith(key_info[2])]+[None])[state]
