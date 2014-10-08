@@ -14,6 +14,7 @@ __key_actions = []
 __prompt = ">>>"
 __sort = True
 __last_viewed = ""
+__time_to_go = False
 
 def command(name):
     def command_decorator(function):
@@ -37,6 +38,7 @@ def key_command(name):
 
 def main():
     global __prompt
+    global __time_to_go
 
     print("JSON configuration utility version (1.0.0)")
     handle_arguments()
@@ -51,12 +53,18 @@ def main():
             user_input = input(__prompt + " ").strip()
         except KeyboardInterrupt:
             print()
-            exit_command()
+            if __time_to_go:
+                exit_command()
+            else:
+                __time_to_go = True
+                print("Press ^C again to close. Running another command resets this.")
+                continue
 
         if not user_input:
             continue
 
         run_command(user_input)
+        __time_to_go = False
 
 def auto_complete(text, state):
     for command in __file_actions:
