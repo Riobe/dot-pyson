@@ -172,7 +172,6 @@ def view_command(property_path=None):
                 nothing. You can give it a property path to view a smaller part of
                 the document.
                 Usage: print [PROPERTY]"""
-    global __sort
     global __last_viewed
 
     __last_viewed = property_path
@@ -206,6 +205,7 @@ def cd_command(path):
     os.chdir(path)
 
 @key_command("keys")
+@key_command("ls")
 def keys_command(property_path=None):
     """
   keys          Displays all the keys at a given path. If no property path is
@@ -247,7 +247,7 @@ def view_last_command():
                 Usage: last"""
     global __last_viewed
 
-    print(__last_viewed + ": " + config.to_string(__last_viewed))
+    print((__last_viewed + ": " if __last_viewed else "") + config.to_string(__last_viewed))
 
 @command("edit-last")
 @command("set-last")
@@ -276,7 +276,14 @@ def delete_last_command():
   del-last
   rm-last       Delete the last property that was printed.
                 Usage: rm-last"""
-    print("Not implemented")
+    global __last_viewed
+
+    if not __last_viewed:
+        print("Last viewed is the top level, cannot delete.")
+        return
+
+    config.remove_property(__last_viewed)
+    __last_viewed = None
 
 @file_command("write")
 @file_command("save")
