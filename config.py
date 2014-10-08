@@ -41,6 +41,9 @@ def to_string(path=None):
 @trace
 def keys_at(path=None):
     data = json_at(path)
+    if not isinstance(data, OrderedDict):
+        return {}
+
     type_mappings = {
         "<class 'collections.OrderedDict'>": "object",
         "<class 'bool'>": "boolean",
